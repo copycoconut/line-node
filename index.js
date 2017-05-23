@@ -3,7 +3,7 @@ const line = require('@line/bot-sdk');
 
 const config = {
   channelAccessToken: 'F1V3cS8uSreEkevMMvJRfyxWkwyiJW4BVu4u1A71MHamNKmrYnoGgXTT6of2KVvaQwz4AUp8TNAjhtm8lk4789p6pO3F9R8Q1/IaTudK4fOr1iSN9+rT5UPBiebaSa0+y4GuJJMpPMZy1M0/QEPOUAdB04t89/1O/w1cDnyilFU=',
-  channelSecret: 'https://api.line.me/v1/oauth/verify'
+  channelSecret: 'd17971d3023f7c21091f242027dd893b'
 };
 
 const app = express();
