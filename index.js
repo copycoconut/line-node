@@ -1,29 +1,47 @@
-const express = require('express');
-const line = require('@line/bot-sdk');
+const express = require('express')
+const bodyParser = require('body-parser')
+const request = require('request')
+const app = express()
+const port = process.env.PORT || 4000
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
-const config = {
-  channelAccessToken: 'F1V3cS8uSreEkevMMvJRfyxWkwyiJW4BVu4u1A71MHamNKmrYnoGgXTT6of2KVvaQwz4AUp8TNAjhtm8lk4789p6pO3F9R8Q1/IaTudK4fOr1iSN9+rT5UPBiebaSa0+y4GuJJMpPMZy1M0/QEPOUAdB04t89/1O/w1cDnyilFU=',
-  channelSecret: 'd17971d3023f7c21091f242027dd893b'
-};
 
-const app = express();
-app.post('/webhook', line.middleware(config), (req, res) => {
-  Promise
-    .all(req.body.events.map(handleEvent))
-    .then((result) => res.json(result));
-});
+app.post('/webhook', (req, res) => {
+    let reply_token = req.body.events[0].replyToken
+    let msg = req.body.events[0].message.text 
+	let type_ms = req.body.events[0].message.type
+	let user_id = req.body.events[0].source.userId
+	//ส่วนตรวจสอบข้อมูล
+	console.log('type = ' + type_ms);
+	console.log('ข้อความ = ' + msg);
+	console.log('reply_token = ' + reply_token);
+	console.log('user_id = ' + user_id);
+	//ส่วนตอบกลับข้อมูล
+    reply(reply_token, msg)
+    res.sendStatus(200)
+})
 
-const client = new line.Client(config);
-function handleEvent(event) {
-  if (event.type !== 'message' || event.message.type !== 'text') {
-    return Promise.resolve(null);
-  }
 
-  return client.replyMessage(event.replyToken, {
-    type: 'text',
-    text: event.message.text
-  });
+app.listen(port)
+function reply(reply_token, msg) {
+    let headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer {ZzICmf3a+3pzLFcO4ZiwgpBdC2FQL361gFeR+fRqCTb95JZziCXvF8U86NqiHroq2V74cXqHDJ2j0U3z06OUPHfOuMTf8zWtm8qv55Gpv6NAr5s60Ys8n33IWtJftHsihKDPWgJaSNEyXVTroa46/gdB04t89/1O/w1cDnyilFU=}'
+    }
+    let body = JSON.stringify({
+        replyToken: reply_token,
+        messages: [{
+            type: 'text',
+            text: msg
+        }]
+    })
+    request.post({
+        url: 'https://api.line.me/v2/bot/message/reply',
+        headers: headers,
+        body: body
+    }, (err, res, body) => {
+        console.log('status = ' + res.statusCode);
+		
+    });
 }
-
-//app.listen(process.env.PORT);
-app.listen(4000);
